@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>20221213_food_C-訂便當</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/myall.css">
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="pname">餐點名稱</label>
+                            <input type="text" class="form-control" id="pname" name="pname" placeholder="餐點名稱字數3~8">
+                            <div class="form-text" id="err_pname"></div>
+                        </div> 
+                        <div class="mb-3">
+                            <label for="price">餐點價格</label>
+                            <input type="number" min="1" max="500" class="form-control" id="price" name="price" placeholder="餐點價格 1~500">
+                            <div class="form-text" id="err_price"></div>
+                        </div> 
+                        <div class="mb-3">
+                            <label for="pnum">餐點數量</label>
+                            <input type="number" min="1" max="30" class="form-control" id="pnum" name="pnum" placeholder="餐點數量 1~500">
+                            <div class="form-text" id="err_pnum"></div>
+                        </div>
+                        <div class="text-center">
+                            <a href="#" class="btn btn-outline-secondary">取消</a>
+                            <a href="#" class="btn btn-outline-success" id="ok_btn">確認</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/bootstrap.bundle.min.js"></script>
+    <script src="js/jquery-3.6.1.min.js"></script>
+    <script>
+        var flag_pname = false;
+        var flag_price = false;
+        var flag_pnum = false;
+
+        $(function(){
+            $("pname").bind("input propertychange", function(){
+                if($(this).val().length >2 && this.val().length <9){
+                    //符合規則
+                    $("#err_pname").html("字數符合規則");
+                    $("#err_pname").css("color", "green");
+                    flag_pname = true;
+                }else{
+                    $("#err_pname").html("字數不符合規則");
+                    $("#err_pname").css("color", "red");
+                    flag_pname = false;
+                }
+                
+            });
+            
+            $("price").bind("input propertychange", function(){
+                if($(this).val() > 0 && this.val() < 501){
+                    //符合規則
+                    $("#err_price").html("價格符合規則");
+                    $("#err_price").css("color", "green");
+                    flag_price= true;
+                }else{
+                    $("#err_price").html("價格不符合規則");
+                    $("#err_price").css("color", "red");
+                    flag_price = false;
+                }
+                
+            });
+
+            $("pnum").bind("input propertychange", function(){
+                if($(this).val() >0 && this.val() <31){
+                    //符合規則
+                    $("#err_pnum").html("數量符合規則");
+                    $("#err_pnum").css("color", "green");
+                    flag_pnum = true;
+                }else{
+                    $("#err_pnum").html("數量不符合規則");
+                    $("#err_pnum").css("color", "red");
+                    flag_pnum = false;
+                }
+                
+            });
+            $("#ok_btn").bind("click", function(){
+                if(flag_pname && flag_price && flag_pnum){
+                    console.log("ok");
+                    var jsonDATA = {};
+                    jsonDATA["pname"] = $("#pname").val();
+                    jsonDATA["price"] = $("#price").val();
+                    jsonDATA["pnum"] = $("#pnum").val();
+
+                    console.log(JSON.stringify(jsonDATA));
+
+
+                    $.ajax({
+                        type: "POST",
+                        url: "20221213_food_C_api.php",
+                        dataType: "json",
+                        data: JSON.stringify(jsonDATA),
+                        success: showdata,
+                        error: function(){
+                            alert("err0-20221213_food_C_api.php");
+                        }
+                    });
+                }else{
+                    alert("欄位有錯誤，請修正後送出");
+                }
+                })
+            });
+
+            function showdata(data){
+                console.log(data);
+                if(data.state){
+                    alert(data.message);
+                    $("#pname").val("");
+                    $("#price").val("");
+                    $("#pnum").val("");
+                }else{
+                    alert(data.message);
+                }
+            }
+
+
+
+    </script>
+
+</body>
+</html>
